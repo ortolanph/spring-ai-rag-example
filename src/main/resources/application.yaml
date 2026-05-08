@@ -1,3 +1,25 @@
 spring:
   application:
     name: spring-ai-rag-example
+  banner:
+    location: banner.txt
+  cassandra:
+    contact-points: localhost
+    port: 9042
+    keyspace-name: ai_vector_store
+    local-datacenter: dc1
+    schema-action: CREATE_IF_NOT_EXISTS   # auto-creates tables in dev
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o
+      embedding:
+        options:
+          model: text-embedding-3-small
+    vectorstore:
+      cassandra:
+        keyspace: myapp
+        table: ai_documents       # Spring AI creates this automatically
+        initialize-schema: true
