@@ -1,3 +1,11 @@
+app:
+  climate:
+    file: classpath:datasource/climate.csv
+  population:
+    file: classpath:datasource/population.csv
+  oscars:
+    file: classpath:datasource/oscars.csv
+
 spring:
   application:
     name: spring-ai-rag-example

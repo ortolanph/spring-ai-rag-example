@@ -1,12 +1,14 @@
-package pt.pauloortolan.springairagexample.pojo;
+package pt.pauloortolan.springairagexample.persistence;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
+@Table("oscar_nominee")
 @Data
 @Builder
 @NoArgsConstructor
