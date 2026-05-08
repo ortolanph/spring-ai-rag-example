@@ -1,0 +1,41 @@
+services:
+  cassandra:
+    image: cassandra:5.0
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=MyCluster
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - cassandra-net
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  cassandra-web:
+    image: lscr.io/linuxserver/cassandra-web:latest
+    container_name: cassandra-web
+    ports:
+      - "3000:3000"
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_PORT=9042
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    networks:
+      - cassandra-net
+
+volumes:
+  cassandra_data:
+
+networks:
+  cassandra-net:
+    driver: bridge
