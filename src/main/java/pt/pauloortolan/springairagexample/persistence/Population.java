@@ -2,6 +2,8 @@ package pt.pauloortolan.springairagexample.persistence;
 
 import org.springframework.data.cassandra.core.mapping.Table;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Table("population")
@@ -24,4 +26,30 @@ public record Population(
         Double density,
         Double growthRate,
         Double worldPopulationPercentage) {
+
+
+    public Map<String, Object> toMetadata() {
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("id", id);
+        metadata.put("rank", rank);
+        metadata.put("countrySymbol", countrySymbol);
+        metadata.put("countryName", countryName);
+        metadata.put("capital", capital);
+        metadata.put("continent", continent);
+        metadata.put("population2022", population2022);
+        metadata.put("population2020", population2020);
+        metadata.put("population2015", population2015);
+        metadata.put("population2010", population2010);
+        metadata.put("population2000", population2000);
+        metadata.put("population1990", population1990);
+        metadata.put("population1980", population1980);
+        metadata.put("population1970", population1970);
+        metadata.put("area", area);
+        metadata.put("density", density);
+        metadata.put("growthRate", growthRate);
+        metadata.put("worldPopulationPercentage", worldPopulationPercentage);
+
+        return metadata;
+    }
+
 }

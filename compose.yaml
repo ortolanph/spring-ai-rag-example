@@ -1,13 +1,21 @@
 services:
-  cassandra-vector-store:
+  cassandra:
     image: cassandra:5.0
     container_name: cassandra
     ports:
       - "9042:9042"
     environment:
-      - CASSANDRA_CLUSTER_NAME=AIVectorStoreCluster
+      - CASSANDRA_CLUSTER_NAME=MyCluster
       - CASSANDRA_DC=dc1
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M        # was ~979M — this is the key fix
+      - HEAP_NEWSIZE=128M
+    mem_limit: 1500m
+    memswap_limit: 1500m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
       - cassandra_data:/var/lib/cassandra
     networks:
@@ -17,21 +25,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 10
-      start_period: 60s
-
-  cassandra-web:
-    image: lscr.io/linuxserver/cassandra-web:latest
-    container_name: cassandra-web
-    ports:
-      - "3000:3000"
-    environment:
-      - CASSANDRA_HOST=cassandra
-      - CASSANDRA_PORT=9042
-    depends_on:
-      cassandra:
-        condition: service_healthy
-    networks:
-      - cassandra-net
+      start_period: 90s
 
 volumes:
   cassandra_data:

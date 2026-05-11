@@ -60,7 +60,12 @@ public class PopulationIngestorService {
             Population population = ingest(csvRecord);
 
             populationRepository.save(population);
-            documents.add(new Document(objectMapper.writeValueAsString(population)));
+            documents.add(
+                    new Document(
+                            objectMapper.writeValueAsString(population),
+                            population.toMetadata()
+                    )
+            );
 
             statistics.addLoaded();
         } catch (DocumentLoadingException dliException) {
