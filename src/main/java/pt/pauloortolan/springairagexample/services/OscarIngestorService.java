@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import pt.pauloortolan.springairagexample.exceptions.DocumentLoadingException;
-import pt.pauloortolan.springairagexample.exceptions.OscarNomineesException;
+import pt.pauloortolan.springairagexample.exceptions.IngestorException;
 import pt.pauloortolan.springairagexample.persistence.OscarNominee;
 import pt.pauloortolan.springairagexample.persistence.OscarRepository;
 import pt.pauloortolan.springairagexample.pojo.LoadStatistics;
@@ -35,7 +35,7 @@ public class OscarIngestorService {
     @Value("${app.oscars.file}")
     private Resource oscarNomineeFile;
 
-    public LoadStatistics loadOscarNomineeData() throws OscarNomineesException {
+    public LoadStatistics loadOscarNomineeData() throws IngestorException {
         log.info("OscarIngestorService::loadOscarNomineeData()");
         LoadStatistics statistics = LoadStatistics.reset();
         List<Document> documents = new ArrayList<>();
@@ -65,7 +65,7 @@ public class OscarIngestorService {
                 }
             }
         } catch (IOException e) {
-            throw new OscarNomineesException(e.getMessage());
+            throw new IngestorException(e.getMessage());
         }
 
         vectorStore.add(documents);
@@ -75,17 +75,16 @@ public class OscarIngestorService {
 
     private OscarNominee ingest(NamedCsvRecord namedRecord) throws DocumentLoadingException {
         try {
-            return OscarNominee.builder()
-                    .id(UUID.randomUUID())
-                    .yearCeremony(Integer.parseInt(namedRecord.getField("year_ceremony")))
-                    .yearFilm(namedRecord.getField("year_film"))
-                    .ceremony(Integer.parseInt(namedRecord.getField("ceremony")))
-                    .category(namedRecord.getField("category"))
-                    .categoryName(namedRecord.getField("canon_category"))
-                    .name(namedRecord.getField("name"))
-                    .film(namedRecord.getField("film"))
-                    .winner(Boolean.parseBoolean(namedRecord.getField("winner")))
-                    .build();
+            return new OscarNominee(
+                    UUID.randomUUID(),
+                    Integer.parseInt(namedRecord.getField("year_ceremony")),
+                    namedRecord.getField("year_film"),
+                    Integer.parseInt(namedRecord.getField("ceremony")),
+                    namedRecord.getField("category"),
+                    namedRecord.getField("canon_category"),
+                    namedRecord.getField("name"),
+                    namedRecord.getField("film"),
+                    Boolean.parseBoolean(namedRecord.getField("winner")));
         } catch (Exception e) {
             throw new DocumentLoadingException(namedRecord.toString(), e.getMessage());
         }

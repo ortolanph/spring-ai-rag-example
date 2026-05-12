@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @RedisHash("population")
 public record Population(
-
         @Id
         UUID id,
         Integer rank,
@@ -29,7 +28,6 @@ public record Population(
         Double density,
         Double growthRate,
         Double worldPopulationPercentage) {
-
 
     public Map<String, Object> toMetadata() {
         Map<String, Object> metadata = new HashMap<>();

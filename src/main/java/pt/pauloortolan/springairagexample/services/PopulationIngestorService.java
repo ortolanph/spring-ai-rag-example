@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import pt.pauloortolan.springairagexample.exceptions.DocumentLoadingException;
-import pt.pauloortolan.springairagexample.exceptions.PopulationIngestionException;
+import pt.pauloortolan.springairagexample.exceptions.IngestorException;
 import pt.pauloortolan.springairagexample.persistence.Population;
 import pt.pauloortolan.springairagexample.persistence.PopulationRepository;
 import pt.pauloortolan.springairagexample.pojo.LoadStatistics;
@@ -33,7 +33,7 @@ public class PopulationIngestorService {
     @Value("${app.population.file}")
     private Resource populationFile;
 
-    public LoadStatistics loadPopulationData() throws PopulationIngestionException {
+    public LoadStatistics loadPopulationData() throws IngestorException {
         LoadStatistics statistics = LoadStatistics.reset();
         List<Document> documents = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class PopulationIngestorService {
                 }
             }
         } catch (IOException e) {
-            throw new PopulationIngestionException(e.getMessage());
+            throw new IngestorException(e.getMessage());
         }
 
         vectorStore.add(documents);
