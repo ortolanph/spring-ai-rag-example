@@ -1,26 +1,34 @@
 package pt.pauloortolan.springairagexample.persistence;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-@Table("climate")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Climate {
+@RedisHash("climate")
+public record Climate(
 
-    private UUID id;
-    private LocalDateTime time;
-    private Double temperature;
-    private Double rain;
-    private Double cloud;
-    private Double humidity;
+        @Id
+        UUID id,
+        LocalDateTime time,
+        Double temperature,
+        Double rain,
+        Double cloud,
+        Double humidity) {
+
+        public Map<String, Object> toMetadata() {
+                Map<String, Object> metadata = new HashMap<>();
+                metadata.put("id", id);
+                metadata.put("time", time);
+                metadata.put("temperature", temperature);
+                metadata.put("rain", rain);
+                metadata.put("cloud", cloud);
+                metadata.put("humidity", humidity);
+
+                return metadata;
+        }
 
 }

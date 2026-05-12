@@ -1,13 +1,16 @@
 package pt.pauloortolan.springairagexample.persistence;
 
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Table("population")
+@RedisHash("population")
 public record Population(
+
+        @Id
         UUID id,
         Integer rank,
         String countrySymbol,

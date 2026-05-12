@@ -1,3 +1,6 @@
+server:
+  port: 10001
+
 app:
   climate:
     file: classpath:datasource/climate.csv
@@ -11,23 +14,23 @@ spring:
     name: spring-ai-rag-example
   banner:
     location: banner.txt
-  cassandra:
-    contact-points: localhost
-    port: 9042
-    keyspace-name: ai_vector_store
-    local-datacenter: dc1
-    schema-action: CREATE_IF_NOT_EXISTS   # auto-creates tables in dev
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      timeout: 2000
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
       chat:
         options:
-          model: gpt-4o
+          model: gpt-5
+          temperature: 1
       embedding:
         options:
           model: text-embedding-3-small
     vectorstore:
-      cassandra:
-        keyspace: myapp
-        table: ai_documents       # Spring AI creates this automatically
+      redis:
+        index: ai_documents
         initialize-schema: true

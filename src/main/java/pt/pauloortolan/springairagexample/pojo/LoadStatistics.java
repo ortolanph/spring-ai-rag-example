@@ -1,11 +1,12 @@
 package pt.pauloortolan.springairagexample.pojo;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public record LoadStatistics(Integer loaded, Integer failed, Integer total, Set<FailedDocument> failedDocuments) {
 
     public static LoadStatistics reset() {
-        return new LoadStatistics(0, 0, 0, Set.of());
+        return new LoadStatistics(0, 0, 0, new HashSet<>());
     }
 
     public LoadStatistics addLoaded() {

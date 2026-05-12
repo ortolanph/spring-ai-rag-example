@@ -4,5 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
-public interface PopulationRepository extends CrudRepository<Population, UUID> {
+public interface ClimateRepository extends CrudRepository<Climate, UUID> {
 }
