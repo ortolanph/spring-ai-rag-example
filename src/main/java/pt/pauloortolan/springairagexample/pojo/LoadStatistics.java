@@ -1,18 +1,20 @@
 package pt.pauloortolan.springairagexample.pojo;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
 public record LoadStatistics(
-    Integer loaded,
-    Integer failed,
-    Integer total,
-    Set<FailedDocument> failedDocuments,
-    @JsonIgnore Instant start,
-    @JsonIgnore Instant end) {
+        Integer loaded,
+        Integer failed,
+        Integer total,
+        Set<FailedDocument> failedDocuments,
+        @JsonIgnore Instant start,
+        @JsonIgnore Instant end) {
 
     public LoadStatistics {
         failedDocuments = Set.copyOf(failedDocuments);

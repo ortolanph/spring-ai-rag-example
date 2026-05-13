@@ -24,7 +24,7 @@ public class DataIngestorController {
 
     @PostMapping("/climate")
     public ResponseEntity<LoadStatistics> loadClimateData() throws IngestionException {
-        LoadStatistics stats = climateService.ingestData();
+        LoadStatistics stats = climateService.loadData();
 
         return ResponseEntity.ok(stats);
     }
@@ -39,7 +39,7 @@ public class DataIngestorController {
 
     @PostMapping("/oscars")
     public ResponseEntity<LoadStatistics> loadOscarsData() throws IngestionException {
-        LoadStatistics stats = oscarNomineeService.loadOscarNomineeData();
+        LoadStatistics stats = oscarNomineeService.loadData();
 
         return ResponseEntity.ok(stats);
     }
