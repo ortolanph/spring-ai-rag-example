@@ -10,6 +10,12 @@ app:
   oscars:
     file: classpath:datasource/oscars.csv
 
+logging:
+  level:
+    org.springframework.ai: info
+    org.springframework.ai.chat.client.advisor: debug
+    web: debug
+
 spring:
   application:
     name: spring-ai-rag-example
@@ -33,5 +39,5 @@ spring:
           model: text-embedding-3-small
     vectorstore:
       redis:
-        index: ai_documents
+        index: default
         initialize-schema: true

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,6 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 public class Configurations {
 
     private final ChatClient.Builder chatClientBuilder;
-    private final VectorStore vectorStore;
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
@@ -34,15 +34,16 @@ public class Configurations {
     @Bean
     public ChatClient chatClient() {
         return chatClientBuilder
+                .defaultAdvisors(new SimpleLoggerAdvisor())
                 .build();
     }
 
     @Bean
-    public ChatClient raggedChatClient() {
+    public ChatClient raggedChatClient(VectorStore vectorStore) {
         var questionAnswerAdvisor = QuestionAnswerAdvisor.builder(vectorStore).build();
 
         return chatClientBuilder
-                .defaultAdvisors(questionAnswerAdvisor)
+                .defaultAdvisors(new SimpleLoggerAdvisor(), questionAnswerAdvisor)
                 .build();
     }
 }
