@@ -1,7 +1,6 @@
 package pt.pauloortolan.springairagexample.pojo;
 
 import lombok.EqualsAndHashCode;
-
 import java.util.List;
 
 @EqualsAndHashCode

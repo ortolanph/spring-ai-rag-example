@@ -1,100 +1,69 @@
 package pt.pauloortolan.springairagexample.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.NamedCsvRecord;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import pt.pauloortolan.springairagexample.exceptions.DocumentLoadingException;
-import pt.pauloortolan.springairagexample.exceptions.IngestorException;
+import pt.pauloortolan.springairagexample.ingestors.CSVIngestor;
 import pt.pauloortolan.springairagexample.persistence.Population;
 import pt.pauloortolan.springairagexample.persistence.PopulationRepository;
-import pt.pauloortolan.springairagexample.pojo.LoadStatistics;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
-public class PopulationIngestorService {
+public class PopulationIngestorService extends BaseIngestorService<Population> {
 
     private final PopulationRepository populationRepository;
-    private final VectorStore vectorStore;
-    private final ObjectMapper objectMapper;
+    @Qualifier("populatorIngestor")
+    private final CSVIngestor<Population> populatorIngestor;
 
     @Value("${app.population.file}")
     private Resource populationFile;
 
-    public LoadStatistics loadPopulationData() throws IngestorException {
-        LoadStatistics statistics = LoadStatistics.reset();
-        List<Document> documents = new ArrayList<>();
-
-        try {
-            Path populationData = populationFile.getFile().toPath();
-
-            CsvReader<NamedCsvRecord> csvReader = CsvReader
-                    .builder()
-                    .ofNamedCsvRecord(populationData, StandardCharsets.UTF_8);
-
-            for (NamedCsvRecord namedRecord : csvReader) {
-                try {
-                    Population population = ingest(namedRecord);
-
-                    populationRepository.save(population);
-                    documents.add(
-                            new Document(
-                                    objectMapper.writeValueAsString(population),
-                                    population.toMetadata()
-                            )
-                    );
-
-                    statistics = statistics.addLoaded();
-                } catch (DocumentLoadingException dliException) {
-                    statistics = statistics.addFailed(dliException.getFailedDocument(), dliException.getMessage());
-                }
-            }
-        } catch (IOException e) {
-            throw new IngestorException(e.getMessage());
-        }
-
-        vectorStore.add(documents);
-
-        return statistics;
+    public PopulationIngestorService(
+            CSVIngestor<Population> populationFileIngestor,
+            PopulationRepository populationRepository,
+            VectorStore vectorStore,
+            ObjectMapper objectMapper) {
+        log.info("PopulationIngestorService::constructor()");
+        this.populationRepository = populationRepository;
+        this.populatorIngestor = populationFileIngestor;
+        super(vectorStore, objectMapper);
     }
 
-    private Population ingest(NamedCsvRecord populationRecord) throws DocumentLoadingException {
+    @Override
+    protected Resource getFile() {
+        log.info("PopulationIngestorService::getFile()");
+        return populationFile;
+    }
+
+    @Override
+    protected void save(Population population) {
+        log.info("PopulationIngestorService::save((population={}))", population);
+        populationRepository.save(population);
+    }
+
+    @Override
+    protected Document toDocument(Population population) {
+        log.info("PopulationIngestorService::toDocument((population={}))", population);
         try {
-            return new Population(
-                    UUID.randomUUID(),
-                    populationRecord.getField("Rank").isEmpty() ? null : Integer.parseInt(populationRecord.getField("Rank")),
-                    populationRecord.getField("CCA3"),
-                    populationRecord.getField("Country/Territory"),
-                    populationRecord.getField("Capital"),
-                    populationRecord.getField("Continent"),
-                    populationRecord.getField("2022 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("2022 Population")),
-                    populationRecord.getField("2020 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("2020 Population")),
-                    populationRecord.getField("2015 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("2015 Population")),
-                    populationRecord.getField("2010 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("2010 Population")),
-                    populationRecord.getField("2000 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("2000 Population")),
-                    populationRecord.getField("1990 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("1990 Population")),
-                    populationRecord.getField("1980 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("1980 Population")),
-                    populationRecord.getField("1970 Population").isEmpty() ? null : Long.parseLong(populationRecord.getField("1970 Population")),
-                    populationRecord.getField("Area (km²)").isEmpty() ? null : Long.parseLong(populationRecord.getField("Area (km²)")),
-                    populationRecord.getField("Density (per km²)").isEmpty() ? null : Double.parseDouble(populationRecord.getField("Density (per km²)")),
-                    populationRecord.getField("Growth Rate").isEmpty() ? null : Double.parseDouble(populationRecord.getField("Growth Rate")),
-                    populationRecord.getField("World Population Percentage").isEmpty() ? null : Double.parseDouble(populationRecord.getField("World Population Percentage")));
-        } catch (Exception e) {
-            throw new DocumentLoadingException(populationRecord.toString(), e.getMessage());
+            return new Document(getObjectMapper().writeValueAsString(population), population.toMetadata());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
+    @Override
+    protected Population parseRecord(NamedCsvRecord namedRecord) throws DocumentLoadingException {
+        log.info("PopulationIngestorService::parseRecord((namedRecord={}))", namedRecord);
+        return populatorIngestor.ingest(namedRecord);
+    }
 }
-

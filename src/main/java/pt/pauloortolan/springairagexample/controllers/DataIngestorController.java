@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pt.pauloortolan.springairagexample.exceptions.IngestorException;
+import pt.pauloortolan.springairagexample.exceptions.IngestionException;
 import pt.pauloortolan.springairagexample.pojo.LoadStatistics;
 import pt.pauloortolan.springairagexample.services.ClimateIngestorService;
 import pt.pauloortolan.springairagexample.services.OscarIngestorService;
@@ -23,21 +23,22 @@ public class DataIngestorController {
     private final ClimateIngestorService climateService;
 
     @PostMapping("/climate")
-    public ResponseEntity<LoadStatistics> loadClimateData() throws IngestorException {
+    public ResponseEntity<LoadStatistics> loadClimateData() throws IngestionException {
         LoadStatistics stats = climateService.ingestData();
 
         return ResponseEntity.ok(stats);
     }
 
     @PostMapping("/population")
-    public ResponseEntity<LoadStatistics> loadPopulationData() throws IngestorException {
-        LoadStatistics stats = populationService.loadPopulationData();
+    public ResponseEntity<LoadStatistics> loadPopulationData() throws IngestionException {
+        log.info("PopulationIngestorService::loadPopulationData()");
+        LoadStatistics stats = populationService.loadData();
 
         return ResponseEntity.ok(stats);
     }
 
     @PostMapping("/oscars")
-    public ResponseEntity<LoadStatistics> loadOscarsData() throws IngestorException {
+    public ResponseEntity<LoadStatistics> loadOscarsData() throws IngestionException {
         LoadStatistics stats = oscarNomineeService.loadOscarNomineeData();
 
         return ResponseEntity.ok(stats);

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import pt.pauloortolan.springairagexample.exceptions.DocumentLoadingException;
-import pt.pauloortolan.springairagexample.exceptions.IngestorException;
+import pt.pauloortolan.springairagexample.exceptions.IngestionException;
 import pt.pauloortolan.springairagexample.persistence.OscarNominee;
 import pt.pauloortolan.springairagexample.persistence.OscarRepository;
 import pt.pauloortolan.springairagexample.pojo.LoadStatistics;
@@ -35,7 +35,7 @@ public class OscarIngestorService {
     @Value("${app.oscars.file}")
     private Resource oscarNomineeFile;
 
-    public LoadStatistics loadOscarNomineeData() throws IngestorException {
+    public LoadStatistics loadOscarNomineeData() throws IngestionException {
         log.info("OscarIngestorService::loadOscarNomineeData()");
         LoadStatistics statistics = LoadStatistics.reset();
         List<Document> documents = new ArrayList<>();
@@ -65,7 +65,7 @@ public class OscarIngestorService {
                 }
             }
         } catch (IOException e) {
-            throw new IngestorException(e.getMessage());
+            throw new IngestionException(e.getMessage());
         }
 
         vectorStore.add(documents);

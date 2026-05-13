@@ -19,6 +19,10 @@ public record Climate(
 
     public Map<String, Object> toMetadata() {
         Map<String, Object> metadata = new HashMap<>();
+
+        metadata.put("type", "Climate");
+        metadata.put("class", getClass().getSimpleName());
+        metadata.put("className", getClass().getName());
         metadata.put("id", id);
         metadata.put("time", time);
         metadata.put("temperature", temperature);
