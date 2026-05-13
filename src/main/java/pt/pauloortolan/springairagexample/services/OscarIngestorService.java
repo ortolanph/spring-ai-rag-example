@@ -60,8 +60,8 @@ public class OscarIngestorService extends BaseIngestorService<OscarNominee> {
     }
 
     @Override
-    protected void save(OscarNominee entity) {
+    protected OscarNominee save(OscarNominee entity) {
         log.info("OscarIngestorService::save(OscarNominee)");
-        repository.save(entity);
+        return repository.save(entity);
     }
 }

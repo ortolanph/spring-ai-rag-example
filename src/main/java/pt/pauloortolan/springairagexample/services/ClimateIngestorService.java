@@ -60,8 +60,8 @@ public class ClimateIngestorService extends BaseIngestorService<Climate> {
     }
 
     @Override
-    protected void save(Climate climate) {
+    protected Climate save(Climate climate) {
         log.info("ClimateIngestorService::save(climate={})", climate);
-        repository.save(climate);
+        return repository.save(climate);
     }
 }

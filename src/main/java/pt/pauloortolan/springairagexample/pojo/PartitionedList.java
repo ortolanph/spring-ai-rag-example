@@ -10,7 +10,7 @@ public class PartitionedList<E> {
     private final int batchSize;
     private final List<E> data;
 
-    public PartitionedList(int batchSize, List<E> data) {
+    public PartitionedList(List<E> data, int batchSize) {
         if (batchSize <= 0) throw new IllegalArgumentException("Batch size must be positive and greater than zero");
         this.batchSize = batchSize;
         this.data = data;
@@ -22,8 +22,8 @@ public class PartitionedList<E> {
 
     public PartitionedList<E> tail() {
         return (batchSize > data.size()) ?
-                new PartitionedList<>(batchSize, List.of()) :
-                new PartitionedList<>(batchSize, data.subList(batchSize, data.size()));
+                new PartitionedList<>(List.of(), batchSize) :
+                new PartitionedList<>(data.subList(batchSize, data.size()), batchSize);
     }
 
     public int size() {

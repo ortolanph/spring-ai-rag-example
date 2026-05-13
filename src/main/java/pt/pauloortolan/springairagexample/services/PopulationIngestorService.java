@@ -45,9 +45,9 @@ public class PopulationIngestorService extends BaseIngestorService<Population> {
     }
 
     @Override
-    protected void save(Population population) {
+    protected Population save(Population population) {
         log.info("PopulationIngestorService::save((population={}))", population);
-        repository.save(population);
+        return repository.save(population);
     }
 
     @Override

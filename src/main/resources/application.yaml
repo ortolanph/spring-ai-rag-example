@@ -2,6 +2,7 @@ server:
   port: 10001
 
 app:
+  batch-size: 2000
   climate:
     file: classpath:datasource/climate.csv
   population:
