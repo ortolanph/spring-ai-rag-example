@@ -39,5 +39,5 @@ spring:
           model: text-embedding-3-small
     vectorstore:
       redis:
-        index: default
+        index-name: spring-ai-rag-example
         initialize-schema: true

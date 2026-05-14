@@ -23,7 +23,7 @@ public record OscarNominee(
     public Map<String, Object> toMetadata() {
         Map<String, Object> metadata = new HashMap<>();
 
-        metadata.put("type", "OscarNominee");
+        metadata.put("source", "OscarNominee");
         metadata.put("class", getClass().getSimpleName());
         metadata.put("className", getClass().getName());
         metadata.put("id", id);
